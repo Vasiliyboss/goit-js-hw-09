@@ -1,6 +1,6 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-
+import Notiflix from 'notiflix';
 const inputTimer = document.querySelector('#datetime-picker');
 const btn = document.querySelector('button[data-start]');
 const daysForTimer = document.querySelector('[data-days]');
@@ -11,7 +11,9 @@ const secondsFortimer = document.querySelector('[data-seconds]');
 btn.setAttribute('disabled', 'disabled');
 
 btn.addEventListener('click', () => { timer.start(); });
-let turgetDate = 0;
+let turgetDate = null;
+let deltaTime = null;
+let intervalId = null;
 
 const options = {
   enableTime: true,
@@ -21,7 +23,7 @@ const options = {
   onClose(selectedDates) {
     console.log(selectedDates[0]);
     if (selectedDates[0] < options.defaultDate) {
-      window.alert("Please choose a date in the future");
+      Notiflix.Notify.failure("Please choose a date in the future");
       return;
     }
     
@@ -30,28 +32,28 @@ const options = {
     
   },
 };
-flatpickr('#datetime-picker', options);
+flatpickr(inputTimer, options);
 
 const timer = {
   isActive: false,
-  intervalId: null,
+
   start() {
     if (this.isActive) { 
       return
     }
     this.isActive = true;
     
-    this.intervalId = setInterval(() => {
-      const deltaTime = turgetDate - Date.now();
-      const timeComponents = convertMs(deltaTime);
-      updateClockFace(timeComponents);
-      console.log(timeComponents);
+    intervalId = setInterval(() => {
+      deltaTime = turgetDate - Date.now();
+      // const timeComponents = convertMs(deltaTime);
+      updateClockFace(deltaTime);
+      
     }, 1000)
   }
 };
 
 function updateClockFace(deltaTime) { 
-  daysForTimer.textcontent = convertMs(deltaTime).days;
+  daysForTimer.textContent = convertMs(deltaTime).days;
   hoursForTimer.textContent = convertMs(deltaTime).hours;
   minutesForTimer.textContent = convertMs(deltaTime).minutes;
   secondsFortimer.textContent = convertMs(deltaTime).seconds;
@@ -79,6 +81,4 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-// console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+
