@@ -9,7 +9,8 @@ function startForm (event) {
   const step = Number(document.querySelector('[name="step"]').value);
   const amount = Number(document.querySelector('[name="amount"]').value);
 
-  for (let i = 1; i <= amount; i += 1) {
+  if (delay >= 0 && amount >= 0 && step >= 0)
+  {for (let i = 1; i <= amount; i += 1) {
     createPromise (i, delay)
       .then(({ position, delay }) => {
         Notiflix.Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
@@ -18,7 +19,8 @@ function startForm (event) {
         Notiflix.Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
       });
       delay += step;
-  };
+  }; }
+  
     form.reset();
 };
 

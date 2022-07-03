@@ -10,7 +10,6 @@ const secondsFortimer = document.querySelector('[data-seconds]');
 
 btn.setAttribute('disabled', 'disabled');
 
-btn.addEventListener('click', () => { timer.start(); });
 let turgetDate = null;
 let deltaTime = null;
 let intervalId = null;
@@ -21,36 +20,32 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
     if (selectedDates[0] < options.defaultDate) {
       Notiflix.Notify.failure("Please choose a date in the future");
-      return;
+      
+    } else {  turgetDate = selectedDates[0];
+      btn.removeAttribute('disabled');
+  
     }
     
-      turgetDate = selectedDates[0];
-      btn.removeAttribute('disabled');
-    
+     
   },
 };
 flatpickr(inputTimer, options);
 
-const timer = {
-  isActive: false,
+btn.addEventListener('click', startTimer);
 
-  start() {
-    if (this.isActive) { 
-      return
+function startTimer(e) { 
+  e.preventDefault();
+  intervalId = setInterval(() => { 
+    deltaTime = turgetDate - Date.now();
+    if (deltaTime < 0) { 
+      clearInterval(intervalId);
+      return;
     }
-    this.isActive = true;
-    
-    intervalId = setInterval(() => {
-      deltaTime = turgetDate - Date.now();
-      // const timeComponents = convertMs(deltaTime);
-      updateClockFace(deltaTime);
-      
-    }, 1000)
-  }
-};
+    updateClockFace(deltaTime);
+  },1000)
+}
 
 function updateClockFace(deltaTime) { 
   daysForTimer.textContent = convertMs(deltaTime).days;
